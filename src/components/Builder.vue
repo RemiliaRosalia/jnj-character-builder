@@ -10,9 +10,9 @@
     <!--Base Info-->
   <label class="header">
   <input type="text" v-model="name" class="secondary">
-  <button @click="levelUp(false)" v-show="buttonsOn"  :disabled="isOneshot" class="levelButton">-</button>
+  <button @click="levelUp(-1)" v-show="buttonsOn"  :disabled="isOneshot" class="levelButton">-</button>
     Level: {{ level }}
-    <button @click="levelUp(true)" v-show="buttonsOn"  :disabled="isOneshot" class="levelButton">+</button>
+    <button @click="levelUp(1)" v-show="buttonsOn"  :disabled="isOneshot" class="levelButton">+</button>
 </label>
 <div class="body"></div>
   <!--IMAGE-->
@@ -145,10 +145,10 @@ export default
     data()
     {
         return{
-            name: '...',
-            race: '...',
-            title: '...',
-            imgURL: 'Place img URL Here',
+            name: 'YourName',
+            race: 'YourRace',
+            title: 'YourTitle',
+            imgURL: 'Type IMG url here',
             //primColor: rgb(153, 34, 34),
             primColor: "#992222",
             primShade: "#800909",
@@ -157,10 +157,11 @@ export default
             secShadeL: "#eeeeee",
             secShadeD: "#a3a3a3",
             alignment: 'NN',
-            skill: '...',
+            skill: 'YourSkill',
             ability: 'AbilityName',
             abilityDesc: 'Please type the description',
             isOneshot: false,
+            isNPC: false,
             level: 1,
             statTotal: 35,
             statPoints: 22,
@@ -244,33 +245,25 @@ export default
       },
       levelUp(x)
       {
-        if(x)
+        this.level += x;
+        if(this.level<=0)
         {
-          if(this.level<5)
+          this.level=1;
+        }
+        if(this.isOneshot)
         {
-          this.statTotal +=3;
+          this.statTotal=40;
+          this.level= 3;
+        }
+        else if(this.level<=5)
+        {
+          this.statTotal= 32 + this.level*3;
         }
         else
         {
-          this.statTotal +=1;
+          this.statTotal = 47 + (this.level - 5)
         }
-        this.level+=1;
-        }
-        else
-        {
-          if(this.level!=1)
-          {
-            if(this.level<=5)
-            {
-              this.statTotal -=3;
-            }
-            else
-            {
-              this.statTotal -=1;
-            }
-            this.level-=1;
-          }
-        }
+
         this.calculateTotal()
       },
       changeStat(stat, value)
@@ -308,8 +301,9 @@ export default
         {
           //console.log(this.stats)
           var FileSaver = require('file-saver');
-          var blob = new Blob([this.name + ','+this.race + ',' + this.title + ',' + this.imgURL + ' ,' + this.primColor + ',' + this.secColor + ',' + this.alignment + ',' + 
-          this.skill + ',' + this.ability + ',' + this.abilityDesc + ',' + this.isOneshot + ',' + this.level + ',' + this.statTotal + ',' + this.stats], 
+          var blob = new Blob([this.name + '√'+this.race + '√' + this.title + '√' + this.imgURL + ' √' + this.primColor + '√' + this.secColor + '√' + this.alignment + '√' + 
+          this.skill + '√' + this.ability + '√' + this.abilityDesc + '√' + this.isOneshot + '√' + this.isNPC + '√' + this.level + '√'+ this.stats[0] + '√'+ this.stats[1] + '√'+ this.stats[2] + 
+          '√'+ this.stats[3] + '√'+ this.stats[4] + '√'+ this.stats[5] + '√'+ this.stats[6] + '√'+ this.stats[7] + '√'+ this.stats[8]], 
           {type: "text/plain;charset=utf-8"});
           FileSaver.saveAs(blob, this.name + ".txt");
         },
@@ -343,7 +337,7 @@ export default
         convertFile()
         {
           console.log(this.inputText)
-          this.inputArray = this.inputText.split(",")
+          this.inputArray = this.inputText.split("√")
           //let x= Number(this.inputArray[20]) + 5
           this.name=this.inputArray[0];
           this.race=this.inputArray[1];
@@ -356,8 +350,8 @@ export default
           this.ability=this.inputArray[8];
           this.abilityDesc=this.inputArray[9];
           this.isOneshot=this.inputArray[10];
-          this.level=Number(this.inputArray[11]);
-          this.statTotal=Number(this.inputArray[12]);
+          this.isNPC=this.inputArray[11]
+          this.level=Number(this.inputArray[12]);
           for(let i=0; i<this.stats.length;i++)
           {
             this.stats[i]=Number(this.inputArray[i+13])
@@ -367,16 +361,13 @@ export default
           this.alignmentChanged()
           this.shadeSet(true);
           this.shadeSet(false);
+          this.levelUp(0);
         },
         takeScreenshot()
         {
           html2canvas(document.querySelector("#capture")).then(canvas => 
           {
             document.body.appendChild(canvas)
-            // const dataURI = "data:text/plain;base64," + encodeBase64(
-            //    this.name + ','+this.race + ',' + this.title + ',' + this.imgURL + ' ,' + this.primColor + ',' + this.secColor + ',' + this.allignment + ',' + this.skill + ',' + this.ability
-            //    + ',' + this.abilityDesc + ',' + this.isOneshot + ',' + this.level + ',' + this.statTotal + ',' + this.stats);
-            //saveAs(canvas, "test.png");
           });
         }
     }
