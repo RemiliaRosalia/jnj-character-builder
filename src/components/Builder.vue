@@ -4,7 +4,9 @@
   <input id="fileInput" type="file" ref="doc" style="display:none;" @change="loadFile"/>
   <button onclick="document.getElementById('fileInput').click();">Load Character</button>
   <br>
-  <div class="builder">
+  <!-- <button @click="takeScreenshot">Take Screenshot</button>
+  <br> -->
+  <div class="builder" id="capture">
     <!--Base Info-->
   <label class="header">
   <input type="text" v-model="name" class="secondary">
@@ -35,6 +37,8 @@
     <br>
     <label>{{ mp }}mp</label>
     <br>
+    <br>
+    <label style="font-size: 60px;" v-show="statPoints!=0">{{ statPoints }} points</label>
   </div>
   <div class="alignment" @change="alignmentChanged()">
       <div class="LG" onclick="document.getElementById('LG').click();"><input id="LG" type="radio" name='moral' value="LG" v-model="alignment"></div>
@@ -52,40 +56,40 @@
     <label>END:
     <button @click="changeStat(0,-1)" v-if="buttonsOn" class="statButton">-</button>
     <input type="number" v-model="stats[0]">
-    <button @click="changeStat(0,1)" v-show="buttonsOn" class="statButton">+</button></label>
+    <button @click="changeStat(0,1)" v-if="buttonsOn" class="statButton">+</button></label>
     <label>WIS:
-    <button @click="changeStat(3,-1)" v-show="buttonsOn" class="statButton">-</button>
+    <button @click="changeStat(3,-1)" v-if="buttonsOn" class="statButton">-</button>
     <input type="number" v-model="stats[3]">
-    <button @click="changeStat(3,1)" v-show="buttonsOn" class="statButton">+</button></label>
+    <button @click="changeStat(3,1)" v-if="buttonsOn" class="statButton">+</button></label>
     <label>CHR:
-    <button @click="changeStat(6,-1)" v-show="buttonsOn" class="statButton">-</button>
+    <button @click="changeStat(6,-1)" v-if="buttonsOn" class="statButton">-</button>
     <input type="number" v-model="stats[6]">
-    <button @click="changeStat(6,1)" v-show="buttonsOn" class="statButton">+</button></label>
+    <button @click="changeStat(6,1)" v-if="buttonsOn" class="statButton">+</button></label>
     <label>MYS:
-    <button @click="changeStat(1,-1)" v-show="buttonsOn" class="statButton">-</button>
+    <button @click="changeStat(1,-1)" v-if="buttonsOn" class="statButton">-</button>
     <input type="number" v-model="stats[1]">
-    <button @click="changeStat(1,1)" v-show="buttonsOn" class="statButton">+</button></label>
+    <button @click="changeStat(1,1)" v-if="buttonsOn" class="statButton">+</button></label>
     <label>DEX:
-    <button @click="changeStat(4,-1)" v-show="buttonsOn" class="statButton">-</button>
+    <button @click="changeStat(4,-1)" v-if="buttonsOn" class="statButton">-</button>
     <input type="number" v-model="stats[4]">
-    <button @click="changeStat(4,1)" v-show="buttonsOn" class="statButton">+</button></label>
+    <button @click="changeStat(4,1)" v-if="buttonsOn" class="statButton">+</button></label>
     <label>LCK:
-    <button @click="changeStat(7,-1)" v-show="buttonsOn" class="statButton">-</button>
+    <button @click="changeStat(7,-1)" v-if="buttonsOn" class="statButton">-</button>
     <input type="number" v-model="stats[7]">
-    <button @click="changeStat(7,1)" v-show="buttonsOn" class="statButton">+</button></label>
+    <button @click="changeStat(7,1)" v-if="buttonsOn" class="statButton">+</button></label>
 
     <label>STR:
-    <button @click="changeStat(2,-1)" v-show="buttonsOn" class="statButton">-</button>
+    <button @click="changeStat(2,-1)" v-if="buttonsOn" class="statButton">-</button>
     <input type="number" v-model="stats[2]">
-    <button @click="changeStat(2,1)" v-show="buttonsOn" class="statButton">+</button></label>
+    <button @click="changeStat(2,1)" v-if="buttonsOn" class="statButton">+</button></label>
     <label>PER:
-    <button @click="changeStat(5,-1)" v-show="buttonsOn" class="statButton">-</button>
+    <button @click="changeStat(5,-1)" v-if="buttonsOn" class="statButton">-</button>
     <input type="number" v-model="stats[5]">
-    <button @click="changeStat(5,1)" v-show="buttonsOn" class="statButton">+</button></label>
+    <button @click="changeStat(5,1)" v-if="buttonsOn" class="statButton">+</button></label>
     <label>PRS:
-    <button @click="changeStat(8,-1)" v-show="buttonsOn" class="statButton">-</button>
+    <button @click="changeStat(8,-1)" v-if="buttonsOn" class="statButton">-</button>
     <input type="number" v-model="stats[8]">
-    <button @click="changeStat(8,1)" v-show="buttonsOn" class="statButton">+</button></label>
+    <button @click="changeStat(8,1)" v-if="buttonsOn" class="statButton">+</button></label>
   </div>
     <div class="footer">
   <label><input type="text" v-model="ability" class="ability"></label>
@@ -129,7 +133,7 @@
 <script>
 import { watch, ref } from 'vue'
 import { saveAs } from 'file-saver';
-
+import html2canvas from 'html2canvas';
 
 const reader = new FileReader();
 
@@ -363,6 +367,17 @@ export default
           this.alignmentChanged()
           this.shadeSet(true);
           this.shadeSet(false);
+        },
+        takeScreenshot()
+        {
+          html2canvas(document.querySelector("#capture")).then(canvas => 
+          {
+            document.body.appendChild(canvas)
+            // const dataURI = "data:text/plain;base64," + encodeBase64(
+            //    this.name + ','+this.race + ',' + this.title + ',' + this.imgURL + ' ,' + this.primColor + ',' + this.secColor + ',' + this.allignment + ',' + this.skill + ',' + this.ability
+            //    + ',' + this.abilityDesc + ',' + this.isOneshot + ',' + this.level + ',' + this.statTotal + ',' + this.stats);
+            //saveAs(canvas, "test.png");
+          });
         }
     }
 }
@@ -386,6 +401,8 @@ export default
 
   width: 1210px;
   height: 878px;
+  /* align-content: center; */
+  float:left;
   
 }
 .statButton
@@ -427,7 +444,7 @@ export default
 }
 .sidebar
 {
-  font-size: 120px;
+  font-size: 100px;
   grid-area: sidebar;
   width:285px;
   /* height:100px; */

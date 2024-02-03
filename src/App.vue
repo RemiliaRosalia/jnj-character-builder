@@ -1,8 +1,8 @@
 
 <template>
-  <!--button @click="takeScreenshot">Take Screenshot</button-->
+
   <container>
-    <div id="capture" class="maker">
+    <div class="maker">
       <Builder></Builder>
     </div>
 
@@ -19,32 +19,19 @@
 <script>
 
 import Builder from './components/Builder.vue'
-import SaveLoad from './components/SaveLoad.vue'
-import html2canvas from 'html2canvas';
+// import SaveLoad from './components/SaveLoad.vue'
+// import html2canvas from 'html2canvas';
 
 export default 
 {
   name: 'App',
   components: 
   {
-    Builder,
-    SaveLoad
+    Builder
   },
   methods:
   {
-    takeScreenshot()
-    {
-      html2canvas(document.querySelector("#capture")).then(canvas => 
-      {
-        document.body.appendChild(canvas)
-        // const dataURI = "data:text/plain;base64," + encodeBase64(
-        //    this.name + ','+this.race + ',' + this.title + ',' + this.imgURL + ' ,' + this.primColor + ',' + this.secColor + ',' + this.allignment + ',' + this.skill + ',' + this.ability
-        //    + ',' + this.abilityDesc + ',' + this.isOneshot + ',' + this.level + ',' + this.statTotal + ',' + this.stats);
-        //saveAs(canvas, "test.png");
-      });
 
-
-    }
   }
 }
 
