@@ -127,8 +127,8 @@
   <label>{{ buttonsOn }}</label>
 <!--Stat Building-->
 <p>You are level {{ level }} and have {{ statPoints }} / {{statTotal}} points left.</p>
-<button @click="levelUp(false)" :disabled="isOneshot">LEVEL DOWN</button>
-<button @click="levelUp(true)" :disabled="isOneshot">LEVEL UP</button>
+<button @click="levelUp(-1)" :disabled="isOneshot">LEVEL DOWN</button>
+<button @click="levelUp(1)" :disabled="isOneshot">LEVEL UP</button>
 <br>
 <br>
 
@@ -299,23 +299,33 @@ export default
       calculateTotal()
       {
         let x = this.statTotal
+        //console.log("stat total is" + this.statTotal)
         for(let i=0; i<this.stats.length;i++)
         {
           //ifs make sure stats are between 1 and 8
           //will need to implement specifics if stats can be uncapped
-          if(this.stats[i]>8 && !this.isNPC)
+          if(!this.isNPC)
           {
-            this.stats[i]=8;
+            if(this.stats[i]>8)
+            {
+              this.stats[i]=8;
+            }
+            else if(this.stats[i]<1)
+            {
+              this.stats[i]=1;
+            }
+            else if(this.stats[8]<5)
+            {
+              this.stats[8]=5;
+            }
+            x-= this.stats[i];
           }
-          else if(this.stats[i]<1 && !this.isNPC)
+          else if (i!=8)
           {
-            this.stats[i]=1;
+            //console.log("Hi im an npc and this stat is number " + i)
+            x-=this.stats[i]
           }
-          else if(this.stats[8]<5 && !this.isNPC)
-          {
-            this.stats[8]=5;
-          }
-          x-= this.stats[i];
+
         } 
         this.statPoints = x;
         this.hp =Math.trunc(10+ this.stats[0] * (.5 * Math.min(this.level, 5) + .5));
