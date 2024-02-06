@@ -86,8 +86,8 @@
     <button @click="changeStat(5,-1)" v-if="buttonsOn" class="statButton">-</button>
     <input type="number" v-model="stats[5]">
     <button @click="changeStat(5,1)" v-if="buttonsOn" class="statButton">+</button></label>
-    <label>PRS:
-    <button @click="changeStat(8,-1)" v-if="buttonsOn" class="statButton">-</button>
+    <label v-show="!isNPC">PRS:
+    <button @click="changeStat(8,-1)" v-if="buttonsOn"  class="statButton">-</button>
     <input type="number" v-model="stats[8]">
     <button @click="changeStat(8,1)" v-if="buttonsOn" class="statButton">+</button></label>
   </div>
@@ -115,9 +115,14 @@
 <br>
 
 
-  <label>Is oneshot: 
+  <label>Is oneshot: {{ isOneshot }}
     <!-- !isOneshot since value does not update before the function-->
   <input type="checkbox"  v-model="isOneshot" @click="oneshotLevelSwitch(!isOneshot)"></label>
+  
+  <br>
+  <label>Is NPC: {{ isNPC }}
+  <input type="checkbox"  v-model="isNPC" @click="npcLevelSwitch(!isNPC)"></label>
+  <br>
   <button @click="buttonsOn=!buttonsOn">Toggle Buttons</button>
   <label>{{ buttonsOn }}</label>
 <!--Stat Building-->
@@ -243,6 +248,22 @@ export default
           this.calculateTotal()
         }
       },
+      npcLevelSwitch(x)
+      {
+        if(x)
+        {
+          //console.log("YES");
+          this.statTotal = this.level*5 +25;
+          this.calculateTotal()
+        }
+        else
+        {
+          //console.log("NO");
+          this.level = 1;
+          this.statTotal = 35;
+          this.calculateTotal()
+        }
+      },
       levelUp(x)
       {
         this.level += x;
@@ -254,6 +275,10 @@ export default
         {
           this.statTotal=40;
           this.level= 3;
+        }
+        else if(this.isNPC)
+        {
+          this.statTotal = 25 + this.level *5;
         }
         else if(this.level<=5)
         {
@@ -273,21 +298,20 @@ export default
       },
       calculateTotal()
       {
-        console.log(this.primColor)
         let x = this.statTotal
         for(let i=0; i<this.stats.length;i++)
         {
           //ifs make sure stats are between 1 and 8
           //will need to implement specifics if stats can be uncapped
-          if(this.stats[i]>8)
+          if(this.stats[i]>8 && !this.isNPC)
           {
             this.stats[i]=8;
           }
-          else if(this.stats[i]<1)
+          else if(this.stats[i]<1 && !this.isNPC)
           {
             this.stats[i]=1;
           }
-          else if(this.stats[8]<5)
+          else if(this.stats[8]<5 && !this.isNPC)
           {
             this.stats[8]=5;
           }
@@ -300,6 +324,7 @@ export default
       saveFile()
         {
           //console.log(this.stats)
+          // name(0), race(1), title(2), imgURL(3), primColor(4), secColor(5), alignment(6), skill(7), ability(8), abilityDesc(9), Oneshot(10), NPC(11), level, stats
           var FileSaver = require('file-saver');
           var blob = new Blob([this.name + '√'+this.race + '√' + this.title + '√' + this.imgURL + ' √' + this.primColor + '√' + this.secColor + '√' + this.alignment + '√' + 
           this.skill + '√' + this.ability + '√' + this.abilityDesc + '√' + this.isOneshot + '√' + this.isNPC + '√' + this.level + '√'+ this.stats[0] + '√'+ this.stats[1] + '√'+ this.stats[2] + 
@@ -310,6 +335,8 @@ export default
 
       loadFile()
         {
+          this.isNPC= false;
+          this.isOneshot = false;
           this.file = this.$refs.doc.files[0];
           if (this.file.name.includes(".txt")) 
           {
@@ -349,8 +376,21 @@ export default
           this.skill=this.inputArray[7];
           this.ability=this.inputArray[8];
           this.abilityDesc=this.inputArray[9];
-          this.isOneshot=this.inputArray[10];
-          this.isNPC=this.inputArray[11]
+          /*ok what the frick was this?
+          SO THE ISSUE I HAD WAS BECAUSE OF SOME STRING VS BOOLEON BS????
+          THIS IS WHY I HATE JAVASCRIPT HAVING NO TYPE DECLARATIONS UGH
+          I STILL HAVE NO EXACT IDEA HOW IT HAPPENED?
+          I THINK BECAUSE ANY STRING VALUE THAT ISNT NULL IS TRUE WHICH INCLUDES "false" BEING TRUE???????????
+          */
+          if(this.inputArray[10]=="true")
+          {
+            this.isOneshot=true;
+          }
+          if(this.inputArray[11]=="true")
+          {
+            this.isNPC=true;
+          }
+
           this.level=Number(this.inputArray[12]);
           for(let i=0; i<this.stats.length;i++)
           {
