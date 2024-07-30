@@ -103,7 +103,7 @@
 
   <br>
   <label>
-  <input type="text" v-model="imgURL" @click="changeImg"/></label>
+  <input type="text" v-model="imgURL" @click="changeImg" class="imgField"/></label>
   <br>
   <!--COLOR PICKERS-->
   <input type="color" v-model="primColor" @change="shadeSet(true)">
@@ -211,6 +211,8 @@ export default
           aRGB[i]=Math.trunc(aRGB[i] + v);
           if(aRGB[i]>255)
             aRGB[i]=255;
+          if(aRGB[i]<0)
+            aRGB[i]=0;
           //console.log("bye " + aRGB[i])
         }
         return("#" + ((1 << 24) + (aRGB[0] << 16) + (aRGB[1] << 8) + aRGB[2]).toString(16).slice(1));
@@ -527,6 +529,12 @@ input[type="text"]
   font-size: 50px;
   border:none;
 }
+input[type="text"].imgField
+{
+  border:solid;
+  
+}
+
 input[type="radio"]
 {
   /* margin-left: 10px;
@@ -601,7 +609,8 @@ input[type="text"].ability
 }
 .NN
 {
-  background: #b7b7b7;
+  /* background: #b7b7b7; */
+  background: #f700ff;
   border: 5px solid black;
     width:85px;
   height:85px;
