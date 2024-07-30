@@ -609,8 +609,7 @@ input[type="text"].ability
 }
 .NN
 {
-  /* background: #b7b7b7; */
-  background: #f700ff;
+  background: #b7b7b7;
   border: 5px solid black;
     width:85px;
   height:85px;
